@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Dime! Pintxo Bar Audio Phrasebook</title>
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+  <style>
+    :root {
+      --green: #5a8f3d;
+      --red: #e52828;
+      --bg: #f8f4e8;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --light-text: #666666;
+      --border: #e0e0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .header {
+      background-color: var(--green);
+      color: white;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+
+    .header p {
+      font-style: italic;
+      opacity: 0.9;
+    }
+
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 1rem;
+      background-color: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-tab {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background-color: rgba(0,0,0,0.05);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .nav-tab.active,
+    .nav-tab:hover {
+      background-color: var(--green);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .section-title {
+      color: var(--green);
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--red);
+      font-size: 1.5rem;
+    }
+
+    .section-subtitle {
+      color: var(--red);
+      margin: 1.5rem 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .phrase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .phrase-grid,
+      .gallery-grid,
+      .number-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .phrase-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gallery-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .gallery-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .gallery-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .number-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 0.8rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .phrase-text {
+      flex-grow: 1;
+    }
+
+    .number-text {
+      flex-grow: 1;
+      font-size: 0.9rem;
+    }
+
+    .phrase-text strong,
+    .number-text strong {
+      color: var(--text);
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .phrase-text em,
+    .number-text em {
+      color: var(--light-text);
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      font-style: normal;
+    }
+
+    .phrase-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .gallery-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .tag.spicy {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+
+    .btn-primary {
+      background-color: var(--green);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #4a7e32;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+
+    .btn-outline:hover {
+      background-color: rgba(90, 143, 61, 0.1);
+    }
+
+    .btn-sm {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.8rem;
+    }
+
+    .play-btn {
+      background-color: var(--red);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .play-btn:hover {
+      background-color: #c41c1c;
+      transform: scale(1.1);
+    }
+
+    .practice-btn {
+      background-color: var(--green);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .practice-btn:hover {
+      transform: scale(1.1);
+      background-color: #4a7e32;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      margin-top: 2rem;
+      color: var(--light-text);
+      font-style: italic;
+      border-top: 1px solid var(--border);
+    }
+
+    .explanation-box {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-left: 4px solid var(--green);
+    }
+
+    .explanation-box p {
+      margin-bottom: 0.5rem;
+    }
+
+    .explanation-box strong {
+      color: var(--green);
+    }
+
+    /* Feedback styles */
+    .feedback-message {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      animation: fadeInOut 3s forwards;
+      text-align: center;
+      max-width: 80%;
+    }
+
+    .feedback-success {
+      background-color: #4CAF50;
+    }
+
+    .feedback-error {
+      background-color: #f44336;
+    }
+
+    .feedback-info {
+      background-color: #2196F3;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
+    }
+
+    /* Listening indicator */
+    .listening {
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 0 0 rgba(90, 143, 61, 0.7);
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(90, 143, 61, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(90, 143, 61, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(90, 143, 61, 0);
+      }
+    }
+
+    /* Compatibility warning */
+    .compatibility-warning {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ff9800;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 14px;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 90%;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>¡Dime! Pintxo Bar Audio Phrasebook</h1>
+    <p>Order with confidence at Basque pintxo bars</p>
+  </div>
+
+  <div class="nav-tabs">
+    <a href="#" class="nav-tab active" data-target="pintxos">🧷 Pintxos</a>
+    <a href="#" class="nav-tab" data-target="raciones">🍽️ Raciones</a>
+    <a href="#" class="nav-tab" data-target="bocadillos">🥖 Bocadillos</a>
+    <a href="#" class="nav-tab" data-target="sandwiches">🍞 Sándwiches</a>
+    <a href="#" class="nav-tab" data-target="postres">🍰 Postres</a>
+    <a href="#" class="nav-tab" data-target="drinks">🍷 Drinks</a>
+    <a href="#" class="nav-tab" data-target="gallery">📷 Gallery</a>
+  </div>
+
+  <div class="container">
+    <!-- Pintxos Section -->
+    <div id="pintxos" class="tab-section">
+      <h2 class="section-title">🧷 Pintxos</h2>
+      <div class="phrase-grid">
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Una tortilla</strong>
+            <em>Potato, egg, onion</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Una tortilla')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Una tortilla')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Una Gilda</strong>
+            <em>Anchovy, olive, chili, bread</em>
+            <div class="tags"><span class="tag spicy">spicy</span></div>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Una Gilda')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Una Gilda')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un pintxo de txangurro</strong>
+            <em>Spider crab, béchamel, paprika</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un pintxo de txangurro')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un pintxo de txangurro')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un montadito de jamón ibérico</strong>
+            <em>Iberian ham on bread</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un montadito de jamón ibérico')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un montadito de jamón ibérico')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un montadito de bonito con alegría riojana</strong>
+            <em>Tuna + spicy chili</em>
+            <div class="tags"><span class="tag spicy">spicy</span></div>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un montadito de bonito con alegría riojana')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un montadito de bonito con alegría riojana')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un bilbainito</strong>
+            <em>Egg, prawn, mayo</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un bilbainito')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un bilbainito')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un tigre</strong>
+            <em>Mussel + spicy sauce</em>
+            <div class="tags"><span class="tag spicy">spicy</span></div>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un tigre')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un tigre')">🎤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Raciones Section -->
+    <div id="raciones" class="tab-section hidden">
+      <h2 class="section-title">🍽️ Raciones</h2>
+      <div class="phrase-grid">
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Unas rabas</strong>
+            <em>Battered squid</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Unas rabas')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Unas rabas')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Unas croquetas de jamón</strong>
+            <em>Ham croquettes</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Unas croquetas de jamón')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Unas croquetas de jamón')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Unas croquetas de queso</strong>
+            <em>Cheese croquettes</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Unas croquetas de queso')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Unas croquetas de queso')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Unas croquetas de bacalao</strong>
+            <em>Cod croquettes</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Unas croquetas de bacalao')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Unas croquetas de bacalao')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Unas croquetas de chipirón</strong>
+            <em>Squid croquettes</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Unas croquetas de chipirón')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Unas croquetas de chipirón')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Unas croquetas de boletus</strong>
+            <em>Mushroom croquettes</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Unas croquetas de boletus')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Unas croquetas de boletus')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Chipirones en su tinta</strong>
+            <em>Squid in its ink</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Chipirones en su tinta')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Chipirones en su tinta')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Morcilla</strong>
+            <em>Blood sausage</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Morcilla')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Morcilla')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Chorizo a la sidra</strong>
+            <em>Chorizo cooked in cider</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Chorizo a la sidra')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Chorizo a la sidra')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Mejillones</strong>
+            <em>Mussels</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Mejillones')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Mejillones')">🎤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bocadillos Section -->
+    <div id="bocadillos" class="tab-section hidden">
+      <h2 class="section-title">🥖 Bocadillos</h2>
+      <div class="phrase-grid">
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un bocadillo de jamón</strong>
+            <em>With cured ham</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un bocadillo de jamón')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un bocadillo de jamón')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un bocadillo de queso</strong>
+            <em>With cheese</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un bocadillo de queso')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un bocadillo de queso')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un bocadillo de chorizo</strong>
+            <em>With chorizo</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un bocadillo de chorizo')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un bocadillo de chorizo')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un bocadillo de txistorra</strong>
+            <em>With txistorra (Basque sausage)</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un bocadillo de txistorra')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un bocadillo de txistorra')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un bocadillo de bonito</strong>
+            <em>With tuna</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un bocadillo de bonito')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un bocadillo de bonito')">🎤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sandwiches Section -->
+    <div id="sandwiches" class="tab-section hidden">
+      <h2 class="section-title">🍞 Sándwiches</h2>
+      <div class="phrase-grid">
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un sándwich de jamón y queso</strong>
+            <em>Ham and cheese sandwich</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un sándwich de jamón y queso')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un sándwich de jamón y queso')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un sándwich vegetal</strong>
+            <em>Vegetable sandwich</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un sándwich vegetal')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un sándwich vegetal')">🎤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Postres Section -->
+    <div id="postres" class="tab-section hidden">
+      <h2 class="section-title">🍰 Postres</h2>
+      <div class="phrase-grid">
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un bollo de mantequilla</strong>
+            <em>Sweet butter bun</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un bollo de mantequilla')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un bollo de mantequilla')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Una carolina</strong>
+            <em>Meringue pastry</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Una carolina')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Una carolina')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Una pantxineta</strong>
+            <em>Custard & almond pastry</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Una pantxineta')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Una pantxineta')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un pastel de arroz</strong>
+            <em>Custard tart</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un pastel de arroz')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un pastel de arroz')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un pastel vasco</strong>
+            <em>Basque cake with custard or cherry filling</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un pastel vasco')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un pastel vasco')">🎤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drinks Section -->
+    <div id="drinks" class="tab-section hidden">
+      <h2 class="section-title">🍷 Drinks</h2>
+      <div class="phrase-grid">
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un txakoli</strong>
+            <em>Basque white wine</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un txakoli')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un txakoli')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un vino tinto</strong>
+            <em>Red wine</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un vino tinto')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un vino tinto')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Una caña</strong>
+            <em>Small beer</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Una caña')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Una caña')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Una zurito</strong>
+            <em>Very small beer</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Una zurito')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Una zurito')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Una sidra</strong>
+            <em>Cider</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Una sidra')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Una sidra')">🎤</button>
+          </div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-text">
+            <strong>Un Patxaran</strong>
+            <em>A sloe berry liqueur</em>
+          </div>
+          <div class="phrase-actions">
+            <button class="play-btn" onclick="playAudio('Un Patxaran')">▶</button>
+            <button class="practice-btn" onclick="checkPronunciation('Un Patxaran')">🎤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div id="gallery" class="tab-section hidden">
+      <h2 class="section-title">📷 Gallery</h2>
+      <p>See the food, hear the pronunciation, and practice saying it yourself</p>
+      
+      <div class="gallery-grid">
+        <!-- Pintxos Gallery Items -->
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Tortilla_de_patatas_-_2008.jpg/320px-Tortilla_de_patatas_-_2008.jpg" alt="Una tortilla" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Una tortilla</strong>
+            <em>Potato, egg, onion</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Una tortilla')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Una tortilla')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Gilda_pintxo.jpg/320px-Gilda_pintxo.jpg" alt="Una Gilda" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Una Gilda</strong>
+            <em>Anchovy, olive, chili, bread</em>
+            <div class="tags"><span class="tag spicy">spicy</span></div>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Una Gilda')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Una Gilda')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Txangurro_pintxo.jpg/320px-Txangurro_pintxo.jpg" alt="Un pintxo de txangurro" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un pintxo de txangurro</strong>
+            <em>Spider crab, béchamel, paprika</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un pintxo de txangurro')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un pintxo de txangurro')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Jamon_iberico_pintxo.jpg/320px-Jamon_iberico_pintxo.jpg" alt="Un montadito de jamón ibérico" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un montadito de jamón ibérico</strong>
+            <em>Iberian ham on bread</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un montadito de jamón ibérico')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un montadito de jamón ibérico')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Bonito_pintxo.jpg/320px-Bonito_pintxo.jpg" alt="Un montadito de bonito con alegría riojana" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un montadito de bonito con alegría riojana</strong>
+            <em>Tuna + spicy chili</em>
+            <div class="tags"><span class="tag spicy">spicy</span></div>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un montadito de bonito con alegría riojana')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un montadito de bonito con alegría riojana')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Bilbainito_pintxo.jpg/320px-Bilbainito_pintxo.jpg" alt="Un bilbainito" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un bilbainito</strong>
+            <em>Egg, prawn, mayo</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un bilbainito')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un bilbainito')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Tigre_pintxo.jpg/320px-Tigre_pintxo.jpg" alt="Un tigre" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un tigre</strong>
+            <em>Mussel + spicy sauce</em>
+            <div class="tags"><span class="tag spicy">spicy</span></div>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un tigre')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un tigre')">Say it</button>
+          </div>
+        </div>
+        
+        <!-- Raciones Gallery Items -->
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Rabas.jpg/320px-Rabas.jpg" alt="Unas rabas" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Unas rabas</strong>
+            <em>Battered squid</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Unas rabas')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Unas rabas')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Croquetas_de_jamon.jpg/320px-Croquetas_de_jamon.jpg" alt="Unas croquetas de jamón" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Unas croquetas de jamón</strong>
+            <em>Ham croquettes</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Unas croquetas de jamón')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Unas croquetas de jamón')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Croquetas_de_queso.jpg/320px-Croquetas_de_queso.jpg" alt="Unas croquetas de queso" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Unas croquetas de queso</strong>
+            <em>Cheese croquettes</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Unas croquetas de queso')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Unas croquetas de queso')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Chipirones_en_su_tinta.jpg/320px-Chipirones_en_su_tinta.jpg" alt="Chipirones en su tinta" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Chipirones en su tinta</strong>
+            <em>Squid in its ink</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Chipirones en su tinta')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Chipirones en su tinta')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Morcilla.jpg/320px-Morcilla.jpg" alt="Morcilla" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Morcilla</strong>
+            <em>Blood sausage</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Morcilla')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Morcilla')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Chorizo_a_la_sidra.jpg/320px-Chorizo_a_la_sidra.jpg" alt="Chorizo a la sidra" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Chorizo a la sidra</strong>
+            <em>Chorizo cooked in cider</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Chorizo a la sidra')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Chorizo a la sidra')">Say it</button>
+          </div>
+        </div>
+        
+        <!-- Bocadillos Gallery Items -->
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Bocadillo_de_jamon.jpg/320px-Bocadillo_de_jamon.jpg" alt="Un bocadillo de jamón" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un bocadillo de jamón</strong>
+            <em>With cured ham</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un bocadillo de jamón')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un bocadillo de jamón')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Bocadillo_de_queso.jpg/320px-Bocadillo_de_queso.jpg" alt="Un bocadillo de queso" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un bocadillo de queso</strong>
+            <em>With cheese</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un bocadillo de queso')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un bocadillo de queso')">Say it</button>
+          </div>
+        </div>
+        
+        <!-- Sandwiches Gallery Items -->
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Sandwich_de_jamon_y_queso.jpg/320px-Sandwich_de_jamon_y_queso.jpg" alt="Un sándwich de jamón y queso" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un sándwich de jamón y queso</strong>
+            <em>Ham and cheese sandwich</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un sándwich de jamón y queso')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un sándwich de jamón y queso')">Say it</button>
+          </div>
+        </div>
+        
+        <!-- Postres Gallery Items -->
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Pantxineta.jpg/320px-Pantxineta.jpg" alt="Una pantxineta" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Una pantxineta</strong>
+            <em>Custard & almond pastry</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Una pantxineta')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Una pantxineta')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Pastel_vasco.jpg/320px-Pastel_vasco.jpg" alt="Un pastel vasco" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un pastel vasco</strong>
+            <em>Basque cake with custard or cherry filling</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un pastel vasco')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un pastel vasco')">Say it</button>
+          </div>
+        </div>
+        
+        <!-- Drinks Gallery Items -->
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Txakoli.jpg/320px-Txakoli.jpg" alt="Un txakoli" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un txakoli</strong>
+            <em>Basque white wine</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un txakoli')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un txakoli')">Say it</button>
+          </div>
+        </div>
+        
+        <div class="gallery-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Patxaran.jpg/320px-Patxaran.jpg" alt="Un Patxaran" class="gallery-image">
+          <div class="phrase-text">
+            <strong>Un Patxaran</strong>
+            <em>A sloe berry liqueur</em>
+          </div>
+          <div class="gallery-actions">
+            <button class="btn btn-primary btn-sm" onclick="playAudio('Un Patxaran')">Hear it</button>
+            <button class="btn btn-outline btn-sm" onclick="checkPronunciation('Un Patxaran')">Say it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>¡Dime! Pintxo Bar Audio Phrasebook</p>
+  </div>
+
+  <script>
+    // ============= VOICE RECOGNITION IMPROVEMENTS =============
+    let currentRecognition = null;
+    let activePracticeButton = null;
+
+    function checkPronunciation(expectedPhrase) {
+      // Check browser support
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        showFeedback("⚠️ Voice recognition works best on Google Chrome or Microsoft Edge.", 'error');
+        return;
+      }
+
+      // Stop any ongoing recognition
+      if (currentRecognition) {
+        currentRecognition.stop();
+      }
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      currentRecognition = recognition;
+      
+      recognition.lang = 'es-ES';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      // Set the active button for visual feedback
+      activePracticeButton = event.currentTarget;
+      activePracticeButton.classList.add('listening');
+
+      // Show listening feedback
+      showFeedback("🎤 Listening...", 'info');
+
+      recognition.onresult = function(event) {
+        const spokenPhrase = event.results[0][0].transcript.trim();
+        const normalizedSpoken = spokenPhrase.toLowerCase().replace(/[.,¿?¡!]/g, '');
+        const normalizedExpected = expectedPhrase.toLowerCase().replace(/[.,¿?¡!]/g, '');
+
+        if (normalizedSpoken === normalizedExpected) {
+          showFeedback("✅ Correct!", 'success');
+        } else {
+          showFeedback(`❌ Try again. You said: "${spokenPhrase}"`, 'error');
+        }
+        
+        if (activePracticeButton) {
+          activePracticeButton.classList.remove('listening');
+          activePracticeButton = null;
+        }
+      };
+
+      recognition.onerror = function(event) {
+        let errorMessage = "Try again";
+        switch(event.error) {
+          case 'no-speech':
+            errorMessage = "No speech detected";
+            break;
+          case 'audio-capture':
+            errorMessage = "Microphone not detected";
+            break;
+          case 'not-allowed':
+            errorMessage = "Microphone access denied";
+            break;
+          default:
+            errorMessage = `Error: ${event.error}`;
+        }
+        
+        showFeedback(`⚠️ ${errorMessage}`, 'error');
+        
+        if (activePracticeButton) {
+          activePracticeButton.classList.remove('listening');
+          activePracticeButton = null;
+        }
+      };
+
+      recognition.onend = function() {
+        if (activePracticeButton) {
+          activePracticeButton.classList.remove('listening');
+          activePracticeButton = null;
+        }
+      };
+
+      // Request microphone permission by starting recognition
+      try {
+        recognition.start();
+      } catch (err) {
+        showFeedback("⚠️ Microphone access denied", 'error');
+      }
+    }
+
+    function showFeedback(message, type) {
+      // Remove any existing feedback first
+      const existingFeedback = document.querySelector('.feedback-message');
+      if (existingFeedback) {
+        existingFeedback.remove();
+      }
+
+      const feedbackDiv = document.createElement('div');
+      feedbackDiv.className = `feedback-message feedback-${type}`;
+      feedbackDiv.textContent = message;
+      document.body.appendChild(feedbackDiv);
+
+      // Auto-remove after 3 seconds
+      setTimeout(() => {
+        feedbackDiv.remove();
+      }, 3000);
+    }
+
+    // ============= EXISTING FUNCTIONS =============
+    function playAudio(text) {
+      const voices = responsiveVoice.getVoices();
+      const spainVoice = voices.find(v => v.name.includes("Spanish (Spain)") || v.name.includes("Español (España)"));
+      responsiveVoice.speak(text, spainVoice ? spainVoice.name : "Spanish Female", {
+        rate: 0.85,
+        pitch: text.includes("?") ? 1.1 : 1
+      });
+    }
+
+    // Tab navigation
+    document.querySelectorAll(".nav-tab").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const target = link.dataset.target;
+        
+        document.querySelectorAll(".tab-section").forEach(s => {
+          s.classList.add("hidden");
+        });
+        
+        document.getElementById(target).classList.remove("hidden");
+        document.querySelectorAll(".nav-tab").forEach(l => l.classList.remove("active"));
+        link.classList.add("active");
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      });
+    });
+
+    // Check for Web Speech API support on load
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        const warning = document.createElement('div');
+        warning.className = 'compatibility-warning';
+        warning.textContent = '⚠️ Voice recognition works best on Google Chrome or Microsoft Edge.';
+        document.body.appendChild(warning);
+      }
+    });
+  </script>
+</body>
+</html>
